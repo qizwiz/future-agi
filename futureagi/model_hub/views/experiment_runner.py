@@ -351,23 +351,20 @@ def check_and_update_experiment_dataset_status(experiment_dataset_id: uuid.UUID)
 
         if not all_column_ids:
             # No columns means dataset is complete - use optimistic update
-            dataset_updated = 0
             if current_status != StatusType.COMPLETED.value:
-                dataset_updated = ExperimentDatasetTable.objects.filter(
+                ExperimentDatasetTable.objects.filter(
                     id=experiment_dataset_id,
                     status=current_status,  # Optimistic lock
                 ).update(status=StatusType.COMPLETED.value)
 
-            # Only cascade to experiment-level check if we performed the transition.
-            # If updated == 0, a concurrent worker already transitioned and cascaded.
-            if dataset_updated > 0 or current_status == StatusType.COMPLETED.value:
-                experiment = experiment_dataset.experiment
-                if experiment:
-                    logger.info(
-                        f"No columns for experiment_dataset {experiment_dataset_id}, "
-                        f"checking experiment {experiment.id} status"
-                    )
-                    check_and_update_experiment_status(experiment.id)
+            # CRITICAL FIX: Always check experiment status when dataset is complete
+            experiment = experiment_dataset.experiment
+            if experiment:
+                logger.info(
+                    f"No columns for experiment_dataset {experiment_dataset_id}, "
+                    f"checking experiment {experiment.id} status"
+                )
+                check_and_update_experiment_status(experiment.id)
             return True
 
         # CRITICAL FIX: Before checking column statuses, update any columns that have
