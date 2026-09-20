@@ -203,7 +203,7 @@ class LiteLLMModelManager:
                 organization_id=organization_id,
                 workspace_id=workspace_id,
                 provider=provider,
-            ).order_by("id").first()
+            ).first()
             if entry is not None:
                 return entry
 
@@ -211,7 +211,7 @@ class LiteLLMModelManager:
             organization_id=organization_id,
             workspace_id__isnull=True,
             provider=provider,
-        ).order_by("id").first()
+        ).first()
 
     def get_provider(self, model_name, organization_id=None, workspace_id=None):
         provider = None
