@@ -20,7 +20,7 @@ import pytest
 from tfc.ee_loader import has_ee
 
 # Skip on the OSS lane only; with ee present the import runs so divergence fails loud.
-if not has_ee("ee"):
+if not has_ee("ee.cloud"):
     pytest.skip("requires ee/ (OSS lane)", allow_module_level=True)
 
 from ee.cloud.telemetry import schema as receiver_schema  # noqa: E402
