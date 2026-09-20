@@ -7,6 +7,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+pytest.importorskip("ee.cloud", reason="requires ee/cloud")
+
 
 @pytest.mark.parametrize(
     ("legacy_path", "canonical_path", "public_symbols"),
